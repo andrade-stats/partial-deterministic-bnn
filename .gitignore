@@ -10,3 +10,5 @@ old_code/
 latex/
 gap_data/
 data/
+.DS_Store
+test.py
