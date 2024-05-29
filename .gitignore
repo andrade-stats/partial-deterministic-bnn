@@ -1,0 +1,12 @@
+results/
+optbnn.egg-info/
+tmp_*
+build/
+1/
+readme_private*
+plots/
+old_results/
+old_code/
+latex/
+gap_data/
+data/
