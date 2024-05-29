@@ -1,6 +1,7 @@
 # On the Efficiency of Partially Deterministic Bayesian Neural Networks
 
 Implementation and source code for all (partial deterministic) Bayesian Neural Networks and experiments as described in [On the Efficiency of Partially Deterministic Bayesian Neural Networks], 2024 (under review).
+TEST2
 
 ## Requirements
 
