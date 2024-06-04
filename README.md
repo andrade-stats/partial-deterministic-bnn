@@ -61,6 +61,8 @@ python ./code/map.py --dataset yacht --id=-1
 ```
 
 2. Run sampling on partially deterministic BNN
+
+
 (A) Train with Pivots Selected by Row  (pivots-per-row, here denoted as abs_fix)
 ```bash
 python ./code/sghmc.py --dataset yacht --method abs_fix --id=-1
