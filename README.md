@@ -41,7 +41,7 @@ Afterwards use "create_dataset_gap.py" to create the gap-splits
 
 This is an example that shows training and evaluation using the maximum a-posterior (MAP) or SGMHC method.
 
-1. Run Training using MAP for the yacht dataset (train) of all folds in parallel:
+Run Training using MAP for the yacht dataset (train) of all folds in parallel:
 ```bash
 python ./code/map.py --dataset yacht --id=-1
 ```
@@ -55,12 +55,12 @@ All result are saved in "./results/METHOD_NAME/DATA_NAME/cv/."
 
 ## Usage - Basic Example Workflow for Training Partially Determininstic BNNs
 
-1. Train with MAP 
+1. Train with MAP:
 ```bash
 python ./code/map.py --dataset yacht --id=-1
 ```
 
-2. Run sampling on partially deterministic BNN
+2. Run sampling on partially deterministic BNN:
 
 
 (A) Train with Pivots Selected by Row  (pivots-per-row, here denoted as abs_fix)
