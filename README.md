@@ -1,7 +1,6 @@
-# On the Efficiency of Partially Deterministic Bayesian Neural Networks
+# On the Effectiveness of Partially Deterministic Bayesian Neural Networks
 
-Implementation and source code for all (partial deterministic) Bayesian Neural Networks and experiments as described in [On the Efficiency of Partially Deterministic Bayesian Neural Networks], 2024 (under review).
-TEST234
+Implementation and source code for all (partial deterministic) Bayesian Neural Networks and experiments as described in [On the Effectiveness of Partially Deterministic Bayesian Neural Networks], 2024 (under review).
 
 ## Requirements
 
@@ -54,7 +53,7 @@ python ./code/sghmc.py --dataset yacht --id=-1
 
 All result are saved in "./results/METHOD_NAME/DATA_NAME/cv/."
 
-## Usage - Basic Example Workflow for Layer-Fix/Abs-Fix/Row-Fix/Sharma-Fix
+## Usage - Basic Example Workflow for Training Partially Determininstic BNNs
 
 1. Train with MAP 
 ```bash
@@ -62,27 +61,28 @@ python ./code/map.py --dataset yacht --id=-1
 ```
 
 2. 
-(A) Train with Partial Row Fixing (abs_fix)
+(A) Train with Pivots Selected by Row  (pivots-per-row, here denoted as abs_fix)
 ```bash
 python ./code/sghmc.py --dataset yacht --method abs_fix --id=-1
 ```
 
-(B) Train with Whole Row Fixing (row_fix)
+(B) Train with Row Subset (row-subset, here denoted as row_fix)
 ```bash
 python ./code/sghmc.py --dataset yacht --method row_fix --id=-1
 ```
 
-(C) Train with Maximal Element Fixing (sharma_fix)
+(C) Train with Maximal Elements (pivots-free, here denoted as sharma_fix)
 ```bash
 python ./code/sghmc.py --dataset yacht --method sharma_fix --id=-1
 ```
 
-(D) Train with Whole Layer Fixing (layer_fix)
+(D) Train with Whole Deterministic Layers (layer-fix, here denoted as layer_fix)
 ```bash
 python ./code/sghmc.py --dataset yacht --method layer_fix --id=-1
 ```
 
 By default one hidden layer is only used. For two or more hidden layers use the "n_hidden" argument.
+For classification use classification_map.py (instead of map.py), and classification_sghmc.py (instead of sghmc.py). 
 
 ## Show results 
 

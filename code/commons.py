@@ -4,7 +4,6 @@ import pandas as pd
 import os
 
 import GPUtil
-import torch
 
 LR = [0.01]
 PRIOR_VAR = [1000.0, 100.0, 50.0, 10.0, 1.0]
@@ -13,15 +12,56 @@ NOISE_VAR = [1.0, 0.5, 0.1, 0.01]
 REGRESSION_DATA_SETS = ["boston", "yacht", "concrete", "energy", "california", "protein"] + ["boston_gap", "yacht_gap", "concrete_gap", "energy_gap", "california_gap", "protein_gap"]
 
 METHOD_TO_NICE_STR = {}
-METHOD_TO_NICE_STR["map"] = "map"
-METHOD_TO_NICE_STR["map_new"] = "map-new"
-METHOD_TO_NICE_STR["sghmc"] = "sghmc"
-METHOD_TO_NICE_STR["layer_fix|1"] = "layer-fix|1"
-METHOD_TO_NICE_STR["layer_fix|2"] = "layer-fix|2"
+METHOD_TO_NICE_STR["map_new"] = "map"
+METHOD_TO_NICE_STR["sghmc"] = "full-random"
+METHOD_TO_NICE_STR["layer_fix|1"] = "layer-fix-1"
+METHOD_TO_NICE_STR["layer_fix|2"] = "layer-fix-2"
 METHOD_TO_NICE_STR["layer_fix"] = "layer-fix"
-METHOD_TO_NICE_STR["sharma_fix"] = "sharma"
-METHOD_TO_NICE_STR["abs_fix"] = "abs-fix"
-METHOD_TO_NICE_STR["row_fix"] = "row-fix"
+METHOD_TO_NICE_STR["sharma_fix"] = "pivots-free"
+METHOD_TO_NICE_STR["abs_fix"] = "pivots-per-row"
+METHOD_TO_NICE_STR["row_fix"] = "row-subset"
+
+FIELD_TO_NICE_STR = {}
+FIELD_TO_NICE_STR["train_rmse"] = "RMSE (train)"
+FIELD_TO_NICE_STR["train_nll"] = "NLL (train)"
+FIELD_TO_NICE_STR["test_rmse"] = "RMSE (test)"
+FIELD_TO_NICE_STR["test_nll"] = "NLL (test)"
+FIELD_TO_NICE_STR["train_acc"] = "Accuracy (train)"
+FIELD_TO_NICE_STR["test_acc"] = "Accuracy (test)"
+
+FIELD_TO_NICE_STR["mean_ess_raw"] = "Mean ESS"
+FIELD_TO_NICE_STR["min_ess_raw"] = "Min ESS"
+FIELD_TO_NICE_STR["mean_rhat_raw"] = '''Mean $\hat{R}$'''
+FIELD_TO_NICE_STR["max_rhat_raw"] = '''Max $\hat{R}$'''
+
+def getDataSetsAndFields(regression_task, gap_data):
+    if regression_task:
+        ALL_DATASETS = ["boston", "yacht", "concrete", "energy", "california", "protein"]
+        ALL_FIELDS = ['train_rmse', 'train_nll', 'test_rmse', 'test_nll']
+    else:
+        ALL_DATASETS = ["htru2", "eeg", "letter", "miniboo"]
+        ALL_FIELDS = ['train_acc', 'train_nll', 'test_acc', 'test_nll']
+
+    if gap_data:
+        all_data_sets_to_gap = []
+        for dataset in ALL_DATASETS:
+            if dataset != "miniboo":
+                all_data_sets_to_gap.append(dataset + "_gap")
+        ALL_DATASETS = all_data_sets_to_gap
+
+    return ALL_DATASETS, ALL_FIELDS
+
+
+def getAllMethods(n_hidden):
+    if n_hidden == 2:
+        ALL_METHODS = ["map_new", "sghmc", "abs_fix", "row_fix", "sharma_fix", "layer_fix|1", "layer_fix|2"]
+    else:
+        assert(n_hidden == 1)
+        ALL_METHODS = ["map_new", "sghmc", "abs_fix", "row_fix", "sharma_fix", "layer_fix"]
+
+    return ALL_METHODS
+
+
 
 def getFilename(id, method, n_hidden, n_units, num_fix_layer = None, max_min = None):
 
@@ -69,6 +109,8 @@ def get_all_fold_ids(dataset, foldId_specifier):
         assert(foldId_specifier >= 1 and foldId_specifier <= 10)
         return np.asarray([foldId_specifier])
 
+# "raw" means evaluated at the predicted values of X_test (otherwise evaluated on weights of the last layer)
+SAMPLING_ANALYSIS_FIELDS = ['mean_ess_raw', 'min_ess_raw', 'mean_rhat_raw', 'max_rhat_raw']
 
 def fully_analyze(dataset, method, n_hidden, num_fix_layer):
 
@@ -92,9 +134,6 @@ def fully_analyze(dataset, method, n_hidden, num_fix_layer):
         # classification
         pred_criteria = "acc"
     
-     # "raw" means evaluated at the predicted values of X_test (otherwise evaluated on weights of the last layer)
-    SAMPLING_ANALYSIS_FIELDS = ['mean_ess_raw', 'min_ess_raw', 'mean_rhat_raw', 'max_rhat_raw']
-
     all_minimum_train_pred_criteria = np.zeros(NR_FOLDS)
     all_minimum_train_nll = np.zeros(NR_FOLDS)
     all_selected_lr = np.zeros(NR_FOLDS)
