@@ -247,7 +247,6 @@ if __name__ == '__main__':
     parser.add_argument('--dataset', type=str, default='eeg') # name of dataset
     parser.add_argument('--fix_bias', type=str, choices=['t', 'f'], default='f')
     parser.add_argument('--id', type=int, default=1)
-    parser.add_argument('--init_param', type=str, choices=['norm', 'map'], default='norm')
     parser.add_argument('--max_min', type=str, choices=['max', 'min'], default='max')
     parser.add_argument('--method', type=str, choices=['sghmc', 'layer_fix', 'abs_fix', 'row_fix', 'sharma_fix'], default='sghmc')
     parser.add_argument('--n_hidden', type=int, default=1)
@@ -283,11 +282,11 @@ if __name__ == '__main__':
 
     if args.one_by_one == "no":
         with multiprocessing.Pool(processes=all_fold_ids.shape[0]) as pool:
-            pool.map(partial(main, dataset=args.dataset, train_eval=args.train_eval, n_hidden=args.n_hidden, n_units=n_units, act_fn = args.act_fn, device = args.device, pre_learn = args.pre_learn, fix_bias = bool(strtobool(args.fix_bias)), n_gpu_use = n_gpu_use, init_param = args.init_param, max_min = args.max_min, method = args.method, num_fix_layer = args.num_fix_layer, NUM_BURN_IN_KEEP_EVERY = NUM_BURN_IN_KEEP_EVERY), all_fold_ids)
+            pool.map(partial(main, dataset=args.dataset, train_eval=args.train_eval, n_hidden=args.n_hidden, n_units=n_units, act_fn = args.act_fn, device = args.device, pre_learn = args.pre_learn, fix_bias = bool(strtobool(args.fix_bias)), n_gpu_use = n_gpu_use, max_min = args.max_min, method = args.method, num_fix_layer = args.num_fix_layer, NUM_BURN_IN_KEEP_EVERY = NUM_BURN_IN_KEEP_EVERY), all_fold_ids)
     else:
         print("WARNING RUN ONE BY ONE (MIGHT BE SLOW)")
         for id in all_fold_ids:
-            main(id, dataset=args.dataset, train_eval=args.train_eval, n_hidden=args.n_hidden, n_units=n_units, act_fn = args.act_fn, device = args.device, pre_learn = args.pre_learn, fix_bias = bool(strtobool(args.fix_bias)), n_gpu_use = n_gpu_use, init_param = args.init_param, max_min = args.max_min, method = args.method, num_fix_layer = args.num_fix_layer, NUM_BURN_IN_KEEP_EVERY = NUM_BURN_IN_KEEP_EVERY)
+            main(id, dataset=args.dataset, train_eval=args.train_eval, n_hidden=args.n_hidden, n_units=n_units, act_fn = args.act_fn, device = args.device, pre_learn = args.pre_learn, fix_bias = bool(strtobool(args.fix_bias)), n_gpu_use = n_gpu_use, max_min = args.max_min, method = args.method, num_fix_layer = args.num_fix_layer, NUM_BURN_IN_KEEP_EVERY = NUM_BURN_IN_KEEP_EVERY)
     
     print('実験終了!!')
     
