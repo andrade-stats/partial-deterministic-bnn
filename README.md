@@ -1,6 +1,6 @@
 # On the Effectiveness of Partially Deterministic Bayesian Neural Networks
 
-Implementation and source code for all (partial deterministic) Bayesian Neural Networks and experiments as described in [On the Effectiveness of Partially Deterministic Bayesian Neural Networks](https://link.springer.com/article/10.1007/s00180-024-01561-7), Computational Statistics, 2024.
+Implementation and source code for all (partial deterministic) Bayesian Neural Networks and experiments as described in [On the Effectiveness of Partially Deterministic Bayesian Neural Networks](https://link.springer.com/article/10.1007/s00180-024-01561-7), Daniel Andrade and Koki Sato, Computational Statistics, 2024.
 
 ## Requirements
 
