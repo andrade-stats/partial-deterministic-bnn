@@ -249,7 +249,7 @@ if __name__ == '__main__':
     parser.add_argument('--id', type=int, default=1)
     parser.add_argument('--max_min', type=str, choices=['max', 'min'], default='max')
     parser.add_argument('--method', type=str, choices=['sghmc', 'layer_fix', 'abs_fix', 'row_fix', 'sharma_fix'], default='sghmc')
-    parser.add_argument('--n_hidden', type=int, default=1)
+    parser.add_argument('--n_hidden', type=int, default=2)
     parser.add_argument('--num_fix_layer', type=int, default=1)
     parser.add_argument('--pre_learn', type=str, choices=['opt', 'cv'], default='cv') # 事前学習した事前分布の使用の有無
     parser.add_argument('--train_eval', type=str, choices=['train', 'eval'], default='train')

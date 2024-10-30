@@ -14,18 +14,22 @@ REGRESSION_DATA_SETS = ["boston", "yacht", "concrete", "energy", "california", "
 METHOD_TO_NICE_STR = {}
 METHOD_TO_NICE_STR["map_new"] = "map"
 METHOD_TO_NICE_STR["sghmc"] = "full-random"
+METHOD_TO_NICE_STR["sghmc_ext"] = "full-random (large run)"
 METHOD_TO_NICE_STR["layer_fix|1"] = "layer-fix-1"
 METHOD_TO_NICE_STR["layer_fix|2"] = "layer-fix-2"
 METHOD_TO_NICE_STR["layer_fix"] = "layer-fix"
 METHOD_TO_NICE_STR["sharma_fix"] = "pivots-free"
 METHOD_TO_NICE_STR["abs_fix"] = "pivots-per-row"
 METHOD_TO_NICE_STR["row_fix"] = "row-subset"
+METHOD_TO_NICE_STR["pd-bnn-sub"] = "partial determininstic (sub)"
+METHOD_TO_NICE_STR["pd-bnn-all"] = "partial determininstic (all)"
 
 FIELD_TO_NICE_STR = {}
 FIELD_TO_NICE_STR["train_rmse"] = "RMSE (train)"
 FIELD_TO_NICE_STR["train_nll"] = "NLL (train)"
 FIELD_TO_NICE_STR["test_rmse"] = "RMSE (test)"
 FIELD_TO_NICE_STR["test_nll"] = "NLL (test)"
+FIELD_TO_NICE_STR["val_nll"] = "NLL (validation)"
 FIELD_TO_NICE_STR["train_acc"] = "Accuracy (train)"
 FIELD_TO_NICE_STR["test_acc"] = "Accuracy (test)"
 
@@ -61,7 +65,8 @@ def getAllMethods(n_hidden):
 
     return ALL_METHODS
 
-
+def getNiceDataSetStr(dataset):
+    return dataset.replace("_", "-")
 
 def getFilename(id, method, n_hidden, n_units, num_fix_layer = None, max_min = None):
 
@@ -71,7 +76,35 @@ def getFilename(id, method, n_hidden, n_units, num_fix_layer = None, max_min = N
         return f'layer_fix{num_fix_layer}_{n_hidden}h{n_units}_id{id}.csv'
     else:
         return f'{method}_{n_hidden}h{n_units}_id{id}.csv'
-    
+
+
+def get_method_and_num_fix_layer(method_with_info, n_hidden):
+
+    if n_hidden >= 2 and method_with_info.startswith("layer_fix") and "|" in method_with_info:
+        method = method_with_info.split("|")[0]
+        num_fix_layer = method_with_info.split("|")[1]
+    else:
+        method = method_with_info
+        num_fix_layer = 1
+
+    return method, num_fix_layer
+
+def get_result_str(results, all_fields, field_to_best_method_id = None, method_id = None):
+
+    output_one_method = ""
+
+    for result_type in all_fields:
+        mean = np.mean(results[result_type])
+        std = np.std(results[result_type])
+        output_one_method += " & "
+
+        if (field_to_best_method_id is not None) and (method_id in field_to_best_method_id[result_type]):
+            output_one_method += " \\textbf{" + str(round(mean, 3))  + "}" + f"({round(std, 3)}) "
+        else:
+            output_one_method += f" {round(mean, 3)}({round(std, 3)}) "
+
+    output_one_method += "\\\\" + "\n"
+    return output_one_method
 
 DATASET_TO_NR_FOLDS = {}
 DATASET_TO_NR_FOLDS["boston_gap"] = 13
@@ -140,6 +173,7 @@ def fully_analyze(dataset, method, n_hidden, num_fix_layer):
     all_selected_test_nll = np.zeros(NR_FOLDS)
     all_selected_test_pred_criteria = np.zeros(NR_FOLDS)
     all_runtimes = np.zeros(NR_FOLDS)
+    all_selected_val_nll = np.zeros(NR_FOLDS)
 
     analysis = {}
     for field in SAMPLING_ANALYSIS_FIELDS:
@@ -157,7 +191,7 @@ def fully_analyze(dataset, method, n_hidden, num_fix_layer):
         # print("df = ")
         # print(df)
         
-        df = df.loc[df["lr"] == 0.01]
+        # df = df.loc[df["lr"] == 0.01]
         df.index = np.arange(len(df.index))
         
         all_minimum_train_pred_criteria[id] = np.nanmin(df.loc[:,"train_" + pred_criteria].values)
@@ -166,11 +200,23 @@ def fully_analyze(dataset, method, n_hidden, num_fix_layer):
         all_val_nll = df.loc[:,"val_nll"].values
         best_idx = np.nanargmin(all_val_nll)
 
+        # print("best valid:")
+        # print(df.loc[best_idx])
+
+        # print(f"fold{id}:")
+        # print(df)
+        # assert(False)
+        # print("best train:")
+        # best_idx_train = np.nanargmin(df.loc[:,"train_nll"].values)
+        # print(df.loc[best_idx_train])
+        # assert(False)
+        
         all_selected_lr[id] = df.loc[best_idx, "lr"]
         all_selected_test_nll[id] = df.loc[best_idx, "test_nll"]
         all_selected_test_pred_criteria[id] = df.loc[best_idx, "test_" + pred_criteria]
 
-        all_runtimes[id] = df.loc[best_idx, "elapsed_t"]
+        all_selected_val_nll[id] = df.loc[best_idx, "val_nll"]
+        all_runtimes[id] = df.loc[best_idx, "elapsed_t"] # runtime in seconds
 
         if method != "map_new":
             for field in SAMPLING_ANALYSIS_FIELDS:
@@ -189,8 +235,8 @@ def fully_analyze(dataset, method, n_hidden, num_fix_layer):
     results["test_" + pred_criteria] = all_selected_test_pred_criteria
     results["train_nll"] = all_minimum_train_nll
     results["test_nll"] = all_selected_test_nll
-    
-    
+    results["val_nll"] = all_selected_val_nll
+
     return results, all_runtimes, analysis
 
 

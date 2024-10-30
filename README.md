@@ -1,6 +1,6 @@
 # On the Effectiveness of Partially Deterministic Bayesian Neural Networks
 
-Implementation and source code for all (partial deterministic) Bayesian Neural Networks and experiments as described in [On the Effectiveness of Partially Deterministic Bayesian Neural Networks], 2024 (under review).
+Implementation and source code for all (partial deterministic) Bayesian Neural Networks and experiments as described in [On the Effectiveness of Partially Deterministic Bayesian Neural Networks](https://link.springer.com/article/10.1007/s00180-024-01561-7), Computational Statistics, 2024.
 
 ## Requirements
 
@@ -39,7 +39,7 @@ Afterwards use "create_dataset_gap.py" to create the gap-splits
 
 ## Usage - Basic Example Workflow for MAP/SGHMC
 
-This is an example that shows training and evaluation using the maximum a-posterior (MAP) or SGMHC method.
+This is an example that shows training and evaluation using the maximum a-posterior (MAP) or SG-HMC method.
 
 Run Training using MAP for the yacht dataset (train) of all folds in parallel:
 ```bash

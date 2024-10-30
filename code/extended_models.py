@@ -40,7 +40,7 @@ def getModel(MAP_PATH, id, task, input_dim, output_dim, hidden_dims, s):
     num_fix_ratio = 0.5
     assert(s.act_fn == "relu")
 
-    if s.method != 'sghmc':
+    if not s.method.startswith('sghmc'):
         if task == "regression":
             if s.pre_learn == 'cv':
                 map_lr, map_pvar, map_nvar = search_best(MAP_PATH)
@@ -57,7 +57,7 @@ def getModel(MAP_PATH, id, task, input_dim, output_dim, hidden_dims, s):
                 model_path = f'./results/map_new/{s.dataset}/cv/lr{map_lr}_pvar{map_pvar}_{s.n_hidden}h{s.n_units}_id{id}.pth'
 
 
-    if s.method == 'sghmc':
+    if s.method.startswith('sghmc'):
         net = MLP(input_dim, output_dim, hidden_dims, s.act_fn, init_param='norm', task=task)
     elif s.method == 'abs_fix':
         # CHECKED

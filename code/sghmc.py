@@ -157,6 +157,8 @@ def main(id, **specs):
 
     if s.method == 'sghmc':
         filename = f'sghmc_{s.n_hidden}h{s.n_units}_id{id}.csv'
+    elif s.method == 'sghmc_ext':
+        filename = f'sghmc_ext_{s.n_hidden}h{s.n_units}_id{id}.csv'
     elif s.method == 'abs_fix':
         filename = f'{s.max_min}_abs_fix_{s.n_hidden}h{s.n_units}_id{id}.csv'
     elif s.method == 'layer_fix':
@@ -183,12 +185,27 @@ def main(id, **specs):
         
         header = ['lr', 'prior_var', 'noise_var', 'train_rmse', 'val_rmse', 'test_rmse', 'train_nll', 'val_nll', 'test_nll',
                     'mean_ess', 'min_ess', 'mean_rhat', 'max_rhat', 'mean_ess_raw', 'min_ess_raw', 'mean_rhat_raw', 'max_rhat_raw','elapsed_t']
-        for lr, prior_var, noise_var in product(LR, PRIOR_VAR, NOISE_VAR):
+        
+        ALL_LR = LR.copy()
+        ALL_PRIOR_VAR = PRIOR_VAR.copy()
+        ALL_NOISE_VAR = NOISE_VAR.copy()
+
+        # if s.method == 'sghmc_ext':
+        #     ALL_PRIOR_VAR = [10.0]
+        #     ALL_NOISE_VAR = [0.01]
+        
+        print("ALL_LR = ", ALL_LR)
+        print("ALL_PRIOR_VAR = ", ALL_PRIOR_VAR)
+        print("ALL_NOISE_VAR = ", ALL_NOISE_VAR)
+        # assert(False)
+
+        for lr, prior_var, noise_var in product(ALL_LR, ALL_PRIOR_VAR, ALL_NOISE_VAR):
             print(f'lr = {lr}, prior_var = {prior_var}, noise_var = {noise_var}')
             list_param = sghmc(id, MAP_PATH, tmp_file_identifier, lr=lr, prior_var=prior_var, noise_var=noise_var, **specs)
             total_list.append(list_param)
     
     elif s.pre_learn == 'opt':
+        assert(False)
         if s.train_eval == 'train':
             header = ['lr', 'noise_var', 'train_rmse', 'val_rmse', 'test_rmse', 'train_nll', 'val_nll', 'test_nll']
             for lr, noise_var in product(LR, NOISE_VAR):
@@ -231,8 +248,8 @@ if __name__ == '__main__':
     parser.add_argument('--fix_bias', type=str, choices=['t', 'f'], default='f')
     parser.add_argument('--id', type=int, default=1)
     parser.add_argument('--max_min', type=str, choices=['max', 'min'], default='max')
-    parser.add_argument('--method', type=str, choices=['sghmc', 'fix', 'abs_fix', 'layer_fix', 'row_fix', 'sharma_fix'], default='sghmc')
-    parser.add_argument('--n_hidden', type=int, default=1)
+    parser.add_argument('--method', type=str, choices=['sghmc', 'sghmc_ext', 'fix', 'abs_fix', 'layer_fix', 'row_fix', 'sharma_fix'], default='sghmc')
+    parser.add_argument('--n_hidden', type=int, default=2)
     parser.add_argument('--num_fix_layer', type=int, default=1)
     parser.add_argument('--pre_learn', type=str, choices=['opt', 'cv'], default='cv')
     parser.add_argument('--train_eval', type=str, choices=['train', 'eval'], default='train')
@@ -256,6 +273,11 @@ if __name__ == '__main__':
     else:
         n_units = 100
         NUM_BURN_IN_KEEP_EVERY = 2000
+
+    
+    if method == 'sghmc_ext':
+        NUM_BURN_IN_KEEP_EVERY = 6000
+    
 
     assert(act_fn == "relu")
 

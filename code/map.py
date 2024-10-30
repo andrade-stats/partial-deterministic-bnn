@@ -225,7 +225,7 @@ if __name__ == '__main__':
     parser.add_argument('--id', type=int, default=1) # fold id
     parser.add_argument('--train_eval', type=str, choices=['train', 'eval', 'modelsave'], default='train')
     parser.add_argument('--n_units', type=int, default=100)
-    parser.add_argument('--n_hidden', type=int, default=1)
+    parser.add_argument('--n_hidden', type=int, default=2)
     parser.add_argument('--device', type=str, choices=['cpu', 'cuda'], default='cpu')
 
     # specifies whether to use cross-valiation (cv) or OptBNN (opt) from "All you need is a good functional prior for Bayesian Deep Learning"
