@@ -23,7 +23,7 @@ pip install .
 
 3. Install arviz and other necessary packages
 ```bash
-pip install -U arviz natsort tqdm seaborn scikit-learn scipy==1.12
+pip install -U GPUtil arviz natsort tqdm seaborn scikit-learn scipy==1.12
 ```
 
 4. Prepare Datasets
@@ -34,7 +34,7 @@ For example:
 ```bash
 python code/create_dataset_standard.py --dataset=yacht --test_size=0.1
 ```
-Afterwards use "create_dataset_gap.py" to create the gap-splits
+Afterwards use "create_dataset_gap.py" to create the gap-splits.
 
 
 ## Usage - Basic Example Workflow for MAP/SGHMC
@@ -94,6 +94,8 @@ Use "show_all_results.py" for creating all tables.
 
 
 ## Remarks
+
+For running only one fold, e.g. fold 2, use "id=2" instead of "id=-1".
 
 Note that the code in optbnn is a slight modification of the original [source code](https://github.com/tranbahien/you-need-a-good-prior) of 
 "All you need is a good functional prior for Bayesian Deep Learning", Tran, Ba-Hien, et al., JMLR, 2022 
